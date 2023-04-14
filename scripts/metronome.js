@@ -3,9 +3,6 @@ var unlocked = false;
 var isPlaying = false;      // Are we currently playing?
 var startTime;              // The start time of the entire sequence.
 var current16thNote;        // What note is currently last scheduled?
-var kickABuffer;            // unretrieved kick_a sound
-var snareABuffer;           // unretrieved snare_a sound
-var hatABuffer;             // unretrieved hat_a sound
 var lookahead = 25.0;       // How frequently to call scheduling function 
                             //(in milliseconds)
 var scheduleAheadTime = 0.1;    // How far ahead to schedule audio (sec)
@@ -21,9 +18,15 @@ var notesInQueue = [];      // the notes that have been put into the web audio,
                             // and may or may not have played yet. {note, time}
 var timerWorker = null;     // The Web Worker used to fire timer messages
 
-
-// First, let's shim the requestAnimationFrame API, with a setTimeout fallback
-window.requestAnimFrame = window.requestAnimationFrame;
+var kickABuffer;            // unretrieved kick_a sound
+var kickBBuffer;            // unretrieved kick_b sound
+var kickCBuffer;            // unretrieved kick_c sound
+var snareABuffer;           // unretrieved snare_a sound
+var snareBBuffer;           // unretrieved snare_b sound
+var snareCBuffer;           // unretrieved snare_c sound
+var hatBBuffer;             // unretrieved hat_b sound
+var hatCBuffer;             // unretrieved hat_c sound
+var hatDBuffer;             // unretrieved hat_d sound
 
 function nextNote() {
     // Advance current note and time by a 16th note...
@@ -55,37 +58,74 @@ function scheduleNote( beatNumber, time ) {
     kickASource.buffer = kickABuffer;
     kickASource.connect(audioContext.destination);
 
+    const kickBSource = audioContext.createBufferSource();
+    kickBSource.buffer = kickBBuffer;
+    kickBSource.connect(audioContext.destination);
+
+    const kickCSource = audioContext.createBufferSource();
+    kickCSource.buffer = kickCBuffer;
+    kickCSource.connect(audioContext.destination);
+
     const snareASource = audioContext.createBufferSource();
     snareASource.buffer = snareABuffer;
     snareASource.connect(audioContext.destination);
 
-    const hatASource = audioContext.createBufferSource();
-    hatASource.buffer = hatABuffer;
-    hatASource.connect(audioContext.destination);
+    const snareBSource = audioContext.createBufferSource();
+    snareBSource.buffer = snareBBuffer;
+    snareBSource.connect(audioContext.destination);
+
+
+    const snareCSource = audioContext.createBufferSource();
+    snareCSource.buffer = snareCBuffer;
+    snareCSource.connect(audioContext.destination);
+
+    const hatBSource = audioContext.createBufferSource();
+    hatBSource.buffer = hatBBuffer;
+    hatBSource.connect(audioContext.destination);
+
+    const hatCSource = audioContext.createBufferSource();
+    hatCSource.buffer = hatCBuffer;
+    hatCSource.connect(audioContext.destination);
+
+    const hatDSource = audioContext.createBufferSource();
+    hatDSource.buffer = hatDBuffer;
+    hatDSource.connect(audioContext.destination);
+
+    let kicks = [kickASource, kickBSource, kickCSource];
+    let snares = [snareASource, snareBSource, snareCSource];
+    let hats = [hatBSource, hatCSource, hatDSource];
+
+    function playRandom(instrument) {
+        if (instrument=="kick") {
+            const kick = kicks[Math.floor(Math.random()*kicks.length)];
+            kick.start( time );
+            kick.stop( time + .5 );
+        }
+        else if (instrument=="snare") {
+            const snare = snares[Math.floor(Math.random()*snares.length)];
+            snare.start( time );
+            snare.stop( time + .5 );
+        }
+        else if (instrument=="hat") {
+            const hat = hats[Math.floor(Math.random()*hats.length)];
+            hat.start( time );
+            hat.stop( time + .5 );
+        }
+    }
 
     if (beatNumber === 4 || beatNumber === 12) { // beats 2 and 4
-        kickASource.start( time );
-        kickASource.stop( time + .5 );
-
-        snareASource.start( time );
-        snareASource.stop( time + .5 );
-
-        hatASource.start( time );
-        hatASource.stop( time + .5 );
+        playRandom("kick");
+        playRandom("snare");
+        playRandom("hat");
     }
-    else if (beatNumber % 4 === 0 ) {   // all downbeats
-        // osc.frequency.value = 440.0;
-        kickASource.start( time );
-        kickASource.stop( time + .5 );
-
-        hatASource.start( time );
-        hatASource.stop( time + .5 );
+    else if (beatNumber % 4 === 0 ) { // all downbeats
+        playRandom("kick");
+        playRandom("hat");
     }
-    else if (beatNumber % 2 === 0) {   // the ands
-        hatASource.start( time );
-        hatASource.stop( time + .5 );
+    else if (beatNumber % 2 === 0) { // the ands
+        playRandom("hat");
     }
-    else {                             // other syncopations
+    else {                           // other syncopations
         return;
     }
 }
@@ -162,6 +202,24 @@ function getAudio() {
             audioContext.decodeAudioData(undecodedAudio, (data) => kickABuffer = data);
         };
         kickARequest.send();
+
+        const kickBRequest = new XMLHttpRequest();
+        kickBRequest.open("GET", "../audio/kick/KICK_V8_b.wav");
+        kickBRequest.responseType = "arraybuffer";
+        kickBRequest.onload = function() {
+            let undecodedAudio = kickBRequest.response;
+            audioContext.decodeAudioData(undecodedAudio, (data) => kickBBuffer = data);
+        };
+        kickBRequest.send();
+
+        const kickCRequest = new XMLHttpRequest();
+        kickCRequest.open("GET", "../audio/kick/KICK_V8_c.wav");
+        kickCRequest.responseType = "arraybuffer";
+        kickCRequest.onload = function() {
+            let undecodedAudio = kickCRequest.response;
+            audioContext.decodeAudioData(undecodedAudio, (data) => kickCBuffer = data);
+        };
+        kickCRequest.send();
     
         // SNARES
         const snareARequest = new XMLHttpRequest();
@@ -173,13 +231,49 @@ function getAudio() {
         };
         snareARequest.send();
 
-        // HATS
-        const hatARequest = new XMLHttpRequest();
-        hatARequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_a.wav");
-        hatARequest.responseType = "arraybuffer";
-        hatARequest.onload = function() {
-            let undecodedAudio = hatARequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => hatABuffer = data);
+        const snareBRequest = new XMLHttpRequest();
+        snareBRequest.open("GET", "../audio/snare/SNARE_V6_b.wav");
+        snareBRequest.responseType = "arraybuffer";
+        snareBRequest.onload = function() {
+            let undecodedAudio = snareBRequest.response;
+            audioContext.decodeAudioData(undecodedAudio, (data) => snareBBuffer = data);
         };
-        hatARequest.send();
+        snareBRequest.send();
+
+        const snareCRequest = new XMLHttpRequest();
+        snareCRequest.open("GET", "../audio/snare/SNARE_V6_c.wav");
+        snareCRequest.responseType = "arraybuffer";
+        snareCRequest.onload = function() {
+            let undecodedAudio = snareCRequest.response;
+            audioContext.decodeAudioData(undecodedAudio, (data) => snareCBuffer = data);
+        };
+        snareCRequest.send();
+
+        // HATS
+        const hatBRequest = new XMLHttpRequest();
+        hatBRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_b.wav");
+        hatBRequest.responseType = "arraybuffer";
+        hatBRequest.onload = function() {
+            let undecodedAudio = hatBRequest.response;
+            audioContext.decodeAudioData(undecodedAudio, (data) => hatBBuffer = data);
+        };
+        hatBRequest.send();
+
+        const hatCRequest = new XMLHttpRequest();
+        hatCRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_c.wav");
+        hatCRequest.responseType = "arraybuffer";
+        hatCRequest.onload = function() {
+            let undecodedAudio = hatCRequest.response;
+            audioContext.decodeAudioData(undecodedAudio, (data) => hatCBuffer = data);
+        };
+        hatCRequest.send();
+
+        const hatDRequest = new XMLHttpRequest();
+        hatDRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_d.wav");
+        hatDRequest.responseType = "arraybuffer";
+        hatDRequest.onload = function() {
+            let undecodedAudio = hatDRequest.response;
+            audioContext.decodeAudioData(undecodedAudio, (data) => hatDBuffer = data);
+        };
+        hatDRequest.send();
 }

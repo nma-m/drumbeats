@@ -18,6 +18,7 @@ var notesInQueue = [];      // the notes that have been put into the web audio,
                             // and may or may not have played yet. {note, time}
 var timerWorker = null;     // The Web Worker used to fire timer messages
 
+var timeSignature;
 var kickABuffer;            // unretrieved kick_a sound
 var kickBBuffer;            // unretrieved kick_b sound
 var kickCBuffer;            // unretrieved kick_c sound
@@ -35,9 +36,28 @@ function nextNote() {
                                               // tempo value to calculate beat length.
     nextNoteTime += 0.25 * secondsPerBeat;    // Add beat length to last beat time
 
-    current16thNote++;    // Advance the beat number, wrap to zero
-    if (current16thNote == 16) {
-        current16thNote = 0;
+    current16thNote++;    // Advance the beat number, wrap to zero after the appropriate
+                          // number of 16ths depending on the time signature
+    timeSignature = document.getElementById("time-sig-select").value;
+
+    switch (timeSignature) {
+        case "four-four":
+            if (current16thNote == 16) {
+                current16thNote = 0;
+            }
+            break;
+        case "three-four":
+            if (current16thNote == 12) {
+                current16thNote = 0;
+            }
+            break;
+        case "six-eight":
+            if (current16thNote == 12) {
+                current16thNote = 0;
+            }
+            break;
+        default:
+            break;
     }
 }
 
@@ -113,20 +133,56 @@ function scheduleNote( beatNumber, time ) {
         }
     }
 
-    if (beatNumber === 4 || beatNumber === 12) { // beats 2 and 4
-        playRandom("kick");
-        playRandom("snare");
-        playRandom("hat");
-    }
-    else if (beatNumber % 4 === 0 ) { // all downbeats
+    if (beatNumber === 0) { // beat 1
         playRandom("kick");
         playRandom("hat");
-    }
-    else if (beatNumber % 2 === 0) { // the ands
-        playRandom("hat");
-    }
-    else {                           // other syncopations
         return;
+    }
+
+    switch (timeSignature) {
+        case "four-four":
+            if (beatNumber === 4 || beatNumber === 12) { // beats 2 and 4
+                playRandom("snare");
+                playRandom("hat");
+            }
+            else if (beatNumber === 8) { // beat 3
+                playRandom("kick");
+                playRandom("hat");
+            }
+            else if (beatNumber % 2 === 0) { // the downbeats and ands
+                playRandom("hat");
+            }
+            else { // other syncopations
+                return;
+            }
+            break;
+        case "three-four":
+            if (beatNumber === 8) { // beat 3
+                playRandom("snare");
+                playRandom("hat");
+            }
+            else if (beatNumber % 2 === 0) { // the downbeats and ands
+                playRandom("hat");
+            }
+            else { // other syncopations
+                return;
+            }
+            break;
+        case "six-eight":
+            if (beatNumber === 6) { // beat 3
+                playRandom("kick");
+                playRandom("hat");
+            }
+            else if (beatNumber === 3 || beatNumber === 9) { // all downbeats
+                playRandom("snare");
+                playRandom("hat");
+            }
+            else { // other syncopations
+                playRandom("hat");
+            }
+            break;
+        default:
+            break;
     }
 }
 

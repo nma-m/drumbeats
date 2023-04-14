@@ -18,8 +18,16 @@
             <button id="play-button">Play</button>
             <div class="tempo-control">
                 <label for="tempo-slider">Tempo:</label>
-                <input type="range" id="tempo-slider" min="40" max="208" step="1" value="92">
+                <input type="range" id="tempo-slider" min="30" max="208" step="1" value="92">
             </div>
+        </div>
+        <div class="metronome-settings">
+            <label for="time-sig-select">Time Signature:</label>
+            <select id="time-sig-select">
+                <option value="four-four">4/4</option>
+                <option value="three-four">3/4</option>
+                <option value="six-eight">6/8</option>
+            </select>
         </div>
     </body>
 </html>

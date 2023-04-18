@@ -1,0 +1,7 @@
+#tempo-display {
+    white-space: pre-wrap;
+}
+
+#tempo-slider {
+    width: 376px; /* tempo range times two */
+}

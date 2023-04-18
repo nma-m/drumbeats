@@ -11,14 +11,17 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="styles/styles.css">
-        <script src="scripts/metronome.js"></script>
     </head>
     <body>
         <div class="audio-player">
             <button id="play-button">Play</button>
             <div class="tempo-control">
                 <label for="tempo-slider">Tempo:</label>
-                <input type="range" id="tempo-slider" min="30" max="208" step="1" value="92">
+                <span id="tempo-display">100</span><span id="bpm-label"> BPM</span>
+                <input type="range" id="tempo-slider" min="30" max="218" step="1" value="100">
+                <button id="dec-tempo-btn">-</button>
+                <button id="inc-tempo-btn">+</button>
+                <button id="tap-tempo-btn">TAP</button>
             </div>
         </div>
         <div class="metronome-settings">
@@ -29,5 +32,7 @@
                 <option value="six-eight">6/8</option>
             </select>
         </div>
+        <script src="scripts/metronome.js"></script>
+        <script src="scripts/tempo.js"></script>
     </body>
 </html>

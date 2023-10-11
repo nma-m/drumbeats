@@ -13,8 +13,14 @@
         <link rel="stylesheet" href="styles/styles.css">
     </head>
     <body>
+        <div class="stopwatch-container">
+            <p class="stopwatch-display">00:00:00</p>
+            <div class="control-btns-wrapper">
+              <button id="reset-btn" class="control-btn">Reset</button>
+            </div>
+          </div>
         <div class="audio-player">
-            <button id="play-button">Play</button>
+            <button id="play-btn">Play</button>
             <div class="tempo-control">
                 <label for="tempo-slider">Tempo:</label>
                 <span id="tempo-display">100</span><span id="bpm-label"> BPM</span>
@@ -33,6 +39,7 @@
             </select>
         </div>
         <script src="scripts/metronome.js"></script>
+        <script src="scripts/stopwatch.js"></script>
         <script src="scripts/tempo.js"></script>
     </body>
 </html>

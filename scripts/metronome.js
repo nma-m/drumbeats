@@ -161,6 +161,9 @@ function scheduleNote( beatNumber, time ) {
                 playRandom("snare");
                 playRandom("hat");
             }
+            else if (beatNumber === 7) { // beat 2
+                playRandom("kick");
+            }
             else if (beatNumber % 2 === 0) { // the downbeats and ands
                 playRandom("hat");
             }
@@ -222,7 +225,7 @@ function play() {
 }
 
 function togglePlay() {
-    document.getElementById("play-button").innerText = play();
+    document.getElementById("play-btn").innerText = play();
 }
 
 function init() {
@@ -230,7 +233,7 @@ function init() {
     getAudio();
 
     // run play() on play button click
-    document.getElementById('play-button').addEventListener('click', togglePlay);
+    document.getElementById('play-btn').addEventListener('click', togglePlay);
 
     timerWorker = new Worker("scripts/metronomeworker.js");
 

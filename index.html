@@ -11,33 +11,60 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="styles/styles.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@200;400&family=Dongle:wght@300&display=swap" rel="stylesheet">
+    
     </head>
     <body>
-        <div class="stopwatch-container">
-            <p class="stopwatch-display">00:00:00</p>
-            <div class="control-btns-wrapper">
-              <button id="reset-btn" class="control-btn">Reset</button>
+        <header>
+            <h1>Drum Beats Web</h1>
+        </header>
+        <main>
+            <div class="stopwatch-container">
+                <div class="stopwatch-display">00:00:00</div>
+                <button id="reset-btn" class="control-btn">
+                    <span class="material-symbols-rounded reset-symbol md-36">device_reset</span>
+                </button>
+              </div>
+            <div class="tempo-display">
+                <div class="increment-btn-container dec">
+                    <button id="dec-tempo-btn">
+                        <span class="material-symbols-rounded md-48 dec-symbol">remove</span>
+                        <span class="quarternote">♩
+                            <span class="equals">=</span>
+                        </span>
+                    </button>
+                </div>
+                <div id="tempo-value">72</span></div>
+                <div class="increment-btn-container inc">
+                    <button id="inc-tempo-btn">
+                        <label for="tempo-slider">bpm</label>
+                        <span class="material-symbols-rounded md-48 inc-symbol">add</span>
+                    </button>
+                </div>
             </div>
-          </div>
-        <div class="audio-player">
-            <button id="play-btn">Play</button>
-            <div class="tempo-control">
-                <label for="tempo-slider">Tempo:</label>
-                <span id="tempo-display">100</span><span id="bpm-label"> BPM</span>
-                <input type="range" id="tempo-slider" min="30" max="218" step="1" value="100">
-                <button id="dec-tempo-btn">-</button>
-                <button id="inc-tempo-btn">+</button>
-                <button id="tap-tempo-btn">TAP</button>
+            <div class="tempo-slider-container">
+                <input type="range" id="tempo-slider" min="30" max="218" step="1" value="72">
             </div>
-        </div>
-        <div class="metronome-settings">
-            <label for="time-sig-select">Time Signature:</label>
-            <select id="time-sig-select">
-                <option value="four-four">4/4</option>
-                <option value="three-four">3/4</option>
-                <option value="six-eight">6/8</option>
-            </select>
-        </div>
+            <div class="timesig-play-tap-container">
+                <div class="timesig-settings">
+                    <label for="timesig-select" hidden>Time Signature:</label>
+                    <select id="timesig-select">
+                        <option value="four-four">4/4</option>
+                        <option value="three-four">3/4</option>
+                        <option value="six-eight">6/8</option>
+                    </select>
+                </div>
+                <button id="play-btn">
+                    <span class="material-symbols-rounded md-48">play_arrow</span>
+                </button>
+                <div class="tap-tempo-btn-container">
+                    <button id="tap-tempo-btn">TAP</button>
+                </div>
+            </div>
+        </main>
         <script src="scripts/metronome.js"></script>
         <script src="scripts/stopwatch.js"></script>
         <script src="scripts/tempo.js"></script>

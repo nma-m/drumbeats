@@ -1,16 +1,12 @@
 const tempoSlider = document.getElementById('tempo-slider');
-const tempoDisplay = document.getElementById('tempo-display');
+const tempoValue = document.getElementById('tempo-value');
 const tapButton = document.getElementById('tap-tempo-btn');
 const MIN_TEMPO = 30;
 const MAX_TEMPO = 218;
 
 // Change value in tempo display
 function changeTempoDisplay() {
-    if (tempoSlider.value < 100) {
-        tempoDisplay.innerText = tempoSlider.value + ' ';
-    } else {
-        tempoDisplay.innerText = tempoSlider.value;
-    }
+    tempoValue.innerText = tempoSlider.value;
 }
 
 tempoSlider.addEventListener('input', changeTempoDisplay);
@@ -42,7 +38,7 @@ function tapTempo() {
 
     // Calculate tempo based on time between taps
     if (tapCount === 0) { 
-        tempoDisplay.innerText = 'TAP';
+        tempoValue.innerText = 'TAP';
     } else {
         // Before adding the next tap time, ask if it's valid i.e. if it's within 20 bpm of the current tempo
         if (Math.abs(60000/timeSinceLastTap - 60000/((timeElapsed + timeSinceLastTap) / tapCount)) < 20) {
@@ -57,7 +53,7 @@ function tapTempo() {
             } else {
                 // Update tempo
                 tempoSlider.value = Math.round(tempo);
-                tempoDisplay.innerText = Math.round(tempo);
+                tempoValue.innerText = Math.round(tempo);
             }
         } else {
             // Reset tap history if tempo changes by more than 20 bpm
@@ -76,7 +72,7 @@ function resetTapTempo() {
     tapCount = 0;
     timeElapsed = 0;
 
-    tempoDisplay.innerText = tempoSlider.value;
+    tempoValue.innerText = tempoSlider.value;
 }
 
 function tapTempoTimeout() {

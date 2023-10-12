@@ -38,7 +38,7 @@ function nextNote() {
 
     current16thNote++;    // Advance the beat number, wrap to zero after the appropriate
                           // number of 16ths depending on the time signature
-    timeSignature = document.getElementById("time-sig-select").value;
+    timeSignature = document.getElementById("timesig-select").value;
 
     switch (timeSignature) {
         case "four-four":
@@ -161,7 +161,7 @@ function scheduleNote( beatNumber, time ) {
                 playRandom("snare");
                 playRandom("hat");
             }
-            else if (beatNumber === 7) { // beat 2
+            else if (beatNumber === 6) { // beat 2 and
                 playRandom("kick");
             }
             else if (beatNumber % 2 === 0) { // the downbeats and ands
@@ -217,15 +217,15 @@ function play() {
         current16thNote = 0;
         nextNoteTime = audioContext.currentTime;
         timerWorker.postMessage("start");
-        return "Pause";
+        return `<span class="material-symbols-rounded md-48">stop</span>`;
     } else {
         timerWorker.postMessage("stop");
-        return "Play";
+        return `<span class="material-symbols-rounded md-48">play_arrow</span>`;
     }
 }
 
 function togglePlay() {
-    document.getElementById("play-btn").innerText = play();
+    document.getElementById("play-btn").innerHTML = play();
 }
 
 function init() {

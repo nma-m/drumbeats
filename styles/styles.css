@@ -1,7 +1,232 @@
-#tempo-display {
-    white-space: pre-wrap;
+:root {
+  --dark-bg-color: #283142;
+  --control-active-color: #9ccc65;
+  --text-color: #f1f3f4;
+  --accessory-gray: rgba(255, 255, 255, 0.1);
+  --changing-value-font: 'Chivo Mono', monospace;
+  --unchanging-value-font: 'Dongle', sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: var(--dark-bg-color);
+  color: var(--text-color);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-family: var(--unchanging-value-font);
+}
+
+h1 {
+  margin: 0 17.375px;
+  margin-top: 8px;
+  font-size: 56px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.stopwatch-container {
+  height: 12.5%;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 2px solid var(--accessory-gray);
+  border-bottom: 2px solid var(--accessory-gray);
+  padding: 12px;
+}
+
+.stopwatch-display {
+  font-size: 32px;
+  font-weight: 200;
+  font-family: var(--changing-value-font);
+}
+
+#reset-btn {
+  flex-grow: .5;
+  padding: 0;
+  border: none;
+  background-color: var(--dark-bg-color);
+  color: var(--text-color);
+}
+
+.tempo-display {
+  height: 12.5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+
+.increment-btn-container {
+  flex-grow: 1;
+}
+
+.increment-btn-container button {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background-color: var(--dark-bg-color);
+  color: var(--text-color);
+}
+
+.increment-btn-container.dec button {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.dec-symbol {
+  flex-grow: 1;
+}
+
+.quarternote {
+  font-family: var(--unchanging-value-font);
+  font-size: 32px;
+  line-height: 1;
+  align-self: flex-end;
+  color: var(--text-color);
+}
+
+.equals {
+  font-size: 20px;
+  line-height: 1;
+}
+
+#tempo-value {
+  font-family: var(--changing-value-font);
+  font-size: 64px;
+  width: 2em;
+  text-align: center;
+}
+
+.increment-btn-container.inc button {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+label[for="tempo-slider"] {
+  align-self: flex-end;
+  font-family: var(--unchanging-value-font);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text-color);
+}
+
+.inc-symbol {
+  flex-grow: 1;
+}
+
+.tempo-slider-container {
+  align-self: center;
+  width: 94%;
+  height: 32px;
+  margin-top: 15px 0;
 }
 
 #tempo-slider {
-    width: 376px; /* tempo range times two */
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 32px;
+  margin: 0 auto;
+  border-radius: 32px;
+  background: var(--accessory-gray);
+  outline: none;
 }
+
+#tempo-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%; 
+  background: var(--control-active-color);
+  cursor: pointer;
+}
+
+#tempo-slider::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--control-active-color);
+  cursor: pointer;
+}
+
+.timesig-play-tap-container {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.timesig-settings, .tap-tempo-btn-container {
+  flex-grow: 1;
+  align-self: flex-start;
+}
+
+#timesig-select {
+  width: 100%;
+  text-align: center;
+  font-family: var(--unchanging-value-font);
+  font-size: 36px;
+  line-height: 1;
+  border: none;
+  border-bottom: 2px solid var(--accessory-gray);
+  background-color: var(--dark-bg-color);
+  color: var(--text-color);
+}
+
+#play-btn {
+  align-self: center;
+  width: 100px;
+  height: 100px;
+  margin-top: 6px;
+  border-radius: 50%;
+  border: 3px solid var(--accessory-gray);
+  background-color: var(--dark-bg-color);
+  color: var(--text-color);
+}
+
+#play-btn:active {
+  border-color: var(--control-active-color);
+  color: var(--control-active-color);
+}
+
+#tap-tempo-btn {
+  width: 100%;
+  padding: 9px 0;
+  border: none;
+  border-bottom: 2px solid var(--accessory-gray);
+  font-family: var(--unchanging-value-font);
+  font-size: 36px;
+  line-height: 1;
+  background-color: var(--dark-bg-color);
+  color: var(--text-color);
+}
+
+#dec-tempo-btn:active,
+#inc-tempo-btn:active,
+#reset-btn:active,
+#tap-tempo-btn:active {
+  color: var(--control-active-color);
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
+}
+
+.material-symbols-rounded.md-36 { font-size: 36px; }
+.material-symbols-rounded.md-48 { font-size: 48px; }

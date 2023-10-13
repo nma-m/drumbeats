@@ -8,12 +8,17 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   margin: 0;
   background-color: var(--dark-bg-color);
   color: var(--text-color);
+  overflow: hidden;
 }
 
 header {
+  flex-grow: 1;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -189,7 +194,7 @@ label[for="tempo-slider"] {
   align-self: center;
   width: 100px;
   height: 100px;
-  margin-top: 6px;
+  margin: 6px 0;
   border-radius: 50%;
   border: 3px solid var(--accessory-gray);
   background-color: var(--dark-bg-color);

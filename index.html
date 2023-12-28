@@ -15,7 +15,6 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@200;400&family=Dongle:wght@300&display=swap" rel="stylesheet">
-    
     </head>
     <body>
         <header>
@@ -52,9 +51,9 @@
                 <div class="timesig-settings">
                     <label for="timesig-select" hidden>Time Signature:</label>
                     <select id="timesig-select">
-                        <option value="four-four">4/4</option>
-                        <option value="three-four">3/4</option>
-                        <option value="six-eight">6/8</option>
+                        <option value="basic-four-four">4/4</option>
+                        <option value="basic-three-four">3/4</option>
+                        <option value="basic-six-eight">6/8</option>
                     </select>
                 </div>
                 <button id="play-btn">
@@ -65,7 +64,7 @@
                 </div>
             </div>
         </main>
-        <script src="scripts/metronome.js"></script>
+        <script src="scripts/metronome.js" type="module"></script>
         <script src="scripts/stopwatch.js"></script>
         <script src="scripts/tempo.js"></script>
     </body>

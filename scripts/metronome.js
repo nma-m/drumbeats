@@ -1,3 +1,5 @@
+import * as beats from './beats.js';
+
 var audioContext = new AudioContext();
 var unlocked = false;
 var isPlaying = false;      // Are we currently playing?
@@ -18,7 +20,7 @@ var notesInQueue = [];      // the notes that have been put into the web audio,
                             // and may or may not have played yet. {note, time}
 var timerWorker = null;     // The Web Worker used to fire timer messages
 
-var timeSignature;
+var beatName;               // the drum beat to be played
 var kickABuffer;            // unretrieved kick_a sound
 var kickBBuffer;            // unretrieved kick_b sound
 var kickCBuffer;            // unretrieved kick_c sound
@@ -38,41 +40,16 @@ function nextNote() {
 
     current16thNote++;    // Advance the beat number, wrap to zero after the appropriate
                           // number of 16ths depending on the time signature
-    timeSignature = document.getElementById("timesig-select").value;
 
-    switch (timeSignature) {
-        case "four-four":
-            if (current16thNote == 16) {
-                current16thNote = 0;
-            }
-            break;
-        case "three-four":
-            if (current16thNote == 12) {
-                current16thNote = 0;
-            }
-            break;
-        case "six-eight":
-            if (current16thNote == 12) {
-                current16thNote = 0;
-            }
-            break;
-        default:
-            break;
+    if (current16thNote >= beats.getBarLegnth(beatName)) {
+        current16thNote = 0;
     }
 }
 
 function scheduleNote( beatNumber, time ) {
     // push the note on the queue, even if we're not playing.
     notesInQueue.push( { note: beatNumber, time: time } );
-
-    /*
-    TODO: let user set their desired subdivision
-    if ( (noteResolution==1) && (beatNumber%2))
-        return; // we're not playing non-8th 16th notes
-    if ( (noteResolution==2) && (beatNumber%4))
-        return; // we're not playing non-quarter 8th notes
-     */
-
+    
     // create the audio
     const kickASource = audioContext.createBufferSource();
     kickASource.buffer = kickABuffer;
@@ -93,7 +70,6 @@ function scheduleNote( beatNumber, time ) {
     const snareBSource = audioContext.createBufferSource();
     snareBSource.buffer = snareBBuffer;
     snareBSource.connect(audioContext.destination);
-
 
     const snareCSource = audioContext.createBufferSource();
     snareCSource.buffer = snareCBuffer;
@@ -133,66 +109,14 @@ function scheduleNote( beatNumber, time ) {
         }
     }
 
-    if (beatNumber === 0) { // beat 1
-        playRandom("kick");
-        playRandom("hat");
-        return;
-    }
-
-    switch (timeSignature) {
-        case "four-four":
-            if (beatNumber === 4 || beatNumber === 12) { // beats 2 and 4
-                playRandom("snare");
-                playRandom("hat");
-            }
-            else if (beatNumber === 8) { // beat 3
-                playRandom("kick");
-                playRandom("hat");
-            }
-            else if (beatNumber % 2 === 0) { // the downbeats and ands
-                playRandom("hat");
-            }
-            else { // other syncopations
-                return;
-            }
-            break;
-        case "three-four":
-            if (beatNumber === 8) { // beat 3
-                playRandom("snare");
-                playRandom("hat");
-            }
-            else if (beatNumber === 6) { // beat 2 and
-                playRandom("kick");
-            }
-            else if (beatNumber % 2 === 0) { // the downbeats and ands
-                playRandom("hat");
-            }
-            else { // other syncopations
-                return;
-            }
-            break;
-        case "six-eight":
-            if (beatNumber === 6) { // beat 3
-                playRandom("kick");
-                playRandom("hat");
-            }
-            else if (beatNumber === 3 || beatNumber === 9) { // all downbeats
-                playRandom("snare");
-                playRandom("hat");
-            }
-            else { // other syncopations
-                playRandom("hat");
-            }
-            break;
-        default:
-            break;
-    }
+    beats.nameToFunciton.get(beatName)(beatNumber, playRandom);
 }
 
 function scheduler() {
     // while there are notes that will need to play before the next interval, 
     // schedule them and advance the pointer.
     while (nextNoteTime < audioContext.currentTime + scheduleAheadTime ) {
+        beatName = document.getElementById("timesig-select").value;
         scheduleNote( current16thNote, nextNoteTime );
         nextNote();
     }

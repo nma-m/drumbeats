@@ -1,9 +1,11 @@
+// Beat name -> function mapping
 export const nameToFunciton = new Map([
     ['basic-four-four', basicFourFour],
     ['basic-three-four', basicThreeFour],
     ['basic-six-eight', basicSixEight]
 ]);
 
+// Beat catogories
 const fourFourGrooves = new Set([
     'basic-four-four'
 ]);
@@ -16,6 +18,7 @@ const sixEightGrooves = new Set([
     'basic-six-eight'
 ]);
 
+// Set the metronome's bar length depending on the beat
 export function getBarLegnth(groove) {
     if (fourFourGrooves.has(groove)) {
         return 16;
@@ -28,6 +31,7 @@ export function getBarLegnth(groove) {
     }
 }
 
+// Beats
 function basicFourFour(beatNumber, playFunction) {
     if (beatNumber === 0) { // beat 1
         playFunction('kick');

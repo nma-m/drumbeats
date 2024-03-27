@@ -3,7 +3,6 @@ import * as beats from './beats.js';
 var audioContext = new AudioContext();
 var unlocked = false;
 var isPlaying = false;      // Are we currently playing?
-var startTime;              // The start time of the entire sequence.
 var current16thNote;        // What note is currently last scheduled?
 var lookahead = 25.0;       // How frequently to call scheduling function 
                             //(in milliseconds)
@@ -11,11 +10,6 @@ var scheduleAheadTime = 0.1;    // How far ahead to schedule audio (sec)
                             // This is calculated from lookahead, and overlaps 
                             // with next interval (in case the timer is late)
 var nextNoteTime = 0.0;     // when the next note is due.
-var noteResolution = 0;     // 0 == 16th, 1 == 8th, 2 == quarter note
-var noteLength = 0.05;      // length of "beep" (in seconds)
-var canvas,                 // the canvas element
-    canvasContext;          // canvasContext is the canvas' context 2D
-var last16thNoteDrawn = -1; // the last "box" we drew on the screen
 var notesInQueue = [];      // the notes that have been put into the web audio,
                             // and may or may not have played yet. {note, time}
 var timerWorker = null;     // The Web Worker used to fire timer messages
@@ -175,88 +169,87 @@ function init() {
 window.addEventListener("load", init );
 
 function getAudio() {
-    
-        // KICKS
-        const kickARequest = new XMLHttpRequest();
-        kickARequest.open("GET", "../audio/kick/KICK_V8_a.wav");
-        kickARequest.responseType = "arraybuffer";
-        kickARequest.onload = function() {
-            let undecodedAudio = kickARequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => kickABuffer = data);
-        };
-        kickARequest.send();
+    // KICKS
+    const kickARequest = new XMLHttpRequest();
+    kickARequest.open("GET", "../audio/kick/KICK_V8_a.wav");
+    kickARequest.responseType = "arraybuffer";
+    kickARequest.onload = function() {
+        let undecodedAudio = kickARequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => kickABuffer = data);
+    };
+    kickARequest.send();
 
-        const kickBRequest = new XMLHttpRequest();
-        kickBRequest.open("GET", "../audio/kick/KICK_V8_b.wav");
-        kickBRequest.responseType = "arraybuffer";
-        kickBRequest.onload = function() {
-            let undecodedAudio = kickBRequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => kickBBuffer = data);
-        };
-        kickBRequest.send();
+    const kickBRequest = new XMLHttpRequest();
+    kickBRequest.open("GET", "../audio/kick/KICK_V8_b.wav");
+    kickBRequest.responseType = "arraybuffer";
+    kickBRequest.onload = function() {
+        let undecodedAudio = kickBRequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => kickBBuffer = data);
+    };
+    kickBRequest.send();
 
-        const kickCRequest = new XMLHttpRequest();
-        kickCRequest.open("GET", "../audio/kick/KICK_V8_c.wav");
-        kickCRequest.responseType = "arraybuffer";
-        kickCRequest.onload = function() {
-            let undecodedAudio = kickCRequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => kickCBuffer = data);
-        };
-        kickCRequest.send();
-    
-        // SNARES
-        const snareARequest = new XMLHttpRequest();
-        snareARequest.open("GET", "../audio/snare/SNARE_V6_a.wav");
-        snareARequest.responseType = "arraybuffer";
-        snareARequest.onload = function() {
-            let undecodedAudio = snareARequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => snareABuffer = data);
-        };
-        snareARequest.send();
+    const kickCRequest = new XMLHttpRequest();
+    kickCRequest.open("GET", "../audio/kick/KICK_V8_c.wav");
+    kickCRequest.responseType = "arraybuffer";
+    kickCRequest.onload = function() {
+        let undecodedAudio = kickCRequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => kickCBuffer = data);
+    };
+    kickCRequest.send();
 
-        const snareBRequest = new XMLHttpRequest();
-        snareBRequest.open("GET", "../audio/snare/SNARE_V6_b.wav");
-        snareBRequest.responseType = "arraybuffer";
-        snareBRequest.onload = function() {
-            let undecodedAudio = snareBRequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => snareBBuffer = data);
-        };
-        snareBRequest.send();
+    // SNARES
+    const snareARequest = new XMLHttpRequest();
+    snareARequest.open("GET", "../audio/snare/SNARE_V6_a.wav");
+    snareARequest.responseType = "arraybuffer";
+    snareARequest.onload = function() {
+        let undecodedAudio = snareARequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => snareABuffer = data);
+    };
+    snareARequest.send();
 
-        const snareCRequest = new XMLHttpRequest();
-        snareCRequest.open("GET", "../audio/snare/SNARE_V6_c.wav");
-        snareCRequest.responseType = "arraybuffer";
-        snareCRequest.onload = function() {
-            let undecodedAudio = snareCRequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => snareCBuffer = data);
-        };
-        snareCRequest.send();
+    const snareBRequest = new XMLHttpRequest();
+    snareBRequest.open("GET", "../audio/snare/SNARE_V6_b.wav");
+    snareBRequest.responseType = "arraybuffer";
+    snareBRequest.onload = function() {
+        let undecodedAudio = snareBRequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => snareBBuffer = data);
+    };
+    snareBRequest.send();
 
-        // HATS
-        const hatBRequest = new XMLHttpRequest();
-        hatBRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_b.wav");
-        hatBRequest.responseType = "arraybuffer";
-        hatBRequest.onload = function() {
-            let undecodedAudio = hatBRequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => hatBBuffer = data);
-        };
-        hatBRequest.send();
+    const snareCRequest = new XMLHttpRequest();
+    snareCRequest.open("GET", "../audio/snare/SNARE_V6_c.wav");
+    snareCRequest.responseType = "arraybuffer";
+    snareCRequest.onload = function() {
+        let undecodedAudio = snareCRequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => snareCBuffer = data);
+    };
+    snareCRequest.send();
 
-        const hatCRequest = new XMLHttpRequest();
-        hatCRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_c.wav");
-        hatCRequest.responseType = "arraybuffer";
-        hatCRequest.onload = function() {
-            let undecodedAudio = hatCRequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => hatCBuffer = data);
-        };
-        hatCRequest.send();
+    // HATS
+    const hatBRequest = new XMLHttpRequest();
+    hatBRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_b.wav");
+    hatBRequest.responseType = "arraybuffer";
+    hatBRequest.onload = function() {
+        let undecodedAudio = hatBRequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => hatBBuffer = data);
+    };
+    hatBRequest.send();
 
-        const hatDRequest = new XMLHttpRequest();
-        hatDRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_d.wav");
-        hatDRequest.responseType = "arraybuffer";
-        hatDRequest.onload = function() {
-            let undecodedAudio = hatDRequest.response;
-            audioContext.decodeAudioData(undecodedAudio, (data) => hatDBuffer = data);
-        };
-        hatDRequest.send();
+    const hatCRequest = new XMLHttpRequest();
+    hatCRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_c.wav");
+    hatCRequest.responseType = "arraybuffer";
+    hatCRequest.onload = function() {
+        let undecodedAudio = hatCRequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => hatCBuffer = data);
+    };
+    hatCRequest.send();
+
+    const hatDRequest = new XMLHttpRequest();
+    hatDRequest.open("GET", "../audio/hat/HAT_A_CLOSED_V3_d.wav");
+    hatDRequest.responseType = "arraybuffer";
+    hatDRequest.onload = function() {
+        let undecodedAudio = hatDRequest.response;
+        audioContext.decodeAudioData(undecodedAudio, (data) => hatDBuffer = data);
+    };
+    hatDRequest.send();
 }

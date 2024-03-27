@@ -1,5 +1,7 @@
 const tempoSlider = document.getElementById('tempo-slider');
 const tempoValue = document.getElementById('tempo-value');
+const decBtn = document.getElementById('dec-tempo-btn');
+const incBtn = document.getElementById('inc-tempo-btn');
 const tapButton = document.getElementById('tap-tempo-btn');
 const MIN_TEMPO = 30;
 const MAX_TEMPO = 218;
@@ -11,12 +13,12 @@ function changeTempoDisplay() {
 
 tempoSlider.addEventListener('input', changeTempoDisplay);
 
-document.getElementById('dec-tempo-btn').addEventListener('click', () => {
+decBtn.addEventListener('click', () => {
     tempoSlider.value --;
     changeTempoDisplay();
 });
 
-document.getElementById('inc-tempo-btn').addEventListener('click', () => {
+incBtn.addEventListener('click', () => {
     tempoSlider.value ++;
     changeTempoDisplay();
 });
